@@ -1,13 +1,28 @@
-# Checking to see if dependencies are installed
-if (-Not(Get-Module -Name PSWriteColor))
-{
-    #TODO consider not installing this package
-    Install-Module PSWriteColor -Scope CurrentUser
-}
 
 $MainFunction =
 {
+    if (-Not(Get-Command git -ErrorAction SilentlyContinue))
+    {
+        throw "This script requires git to be installed to continue!  Please install git and try again!"
+    }
+
     EnsureRmanIsDownloaded
+    CloneAndUpdateManifests
+
+    # league client
+    # $latestManifestLink = Get-ChildItem .\riot-manifests\LoL\NA1\windows\league-client\ | Sort-Object -Descending | Select-Object -First 1 | Get-Content
+    # Invoke-WebRequest $latestManifestLink -OutFile currentManifest.txt
+    # .\bin\rman-dl.exe .\currentManifest.txt --no-write --no-verify
+
+    # lol-game-client
+    $latestManifestLink = Get-ChildItem .\riot-manifests\LoL\NA1\windows\lol-game-client\ | Sort-Object -Descending | Select-Object -First 1 | Get-Content
+    # Invoke-WebRequest $latestManifestLink -OutFile currentManifest.txt
+    # .\bin\rman-dl.exe .\currentManifest.txt --no-write --no-verify --filter-lang en_US
+
+    # # lol-standalone-client-content
+    $latestManifestLink = Get-ChildItem .\riot-manifests\LoL\NA1\windows\lol-standalone-client-content\ | Sort-Object -Descending | Select-Object -First 1 | Get-Content
+    Invoke-WebRequest $latestManifestLink -OutFile currentManifest.txt
+    .\bin\rman-dl.exe .\currentManifest.txt --no-write --no-verify
 }
 
 
@@ -15,7 +30,7 @@ function EnsureRmanIsDownloaded()
 {
     $outputFilePath = "$env:TEMP\rman.zip"
 
-    if (Test-Path "$env:TEMP\rman\rman-dl.exe")
+    if (Test-Path ".\bin\rman-dl.exe")
     {
         return
     }
@@ -32,19 +47,24 @@ function EnsureRmanIsDownloaded()
     Write-Host -ForegroundColor Cyan $latestVersion
 
     # Downloading
-    # Invoke-WebRequest $asset.browser_download_url -OutFile $outputFilePath
+    Invoke-WebRequest $asset.browser_download_url -OutFile $outputFilePath
 
     # Unzipping
     Write-Host -ForegroundColor Yellow "Unzipping..."
-    Expand-Archive -Force "rman.zip" -DestinationPath .
-    # Copy-Item "$($asset.name.Replace('.zip', ''))\SteamPrefill.exe"
+    Expand-Archive -Force $outputFilePath -DestinationPath .
 
-    # Cleanup
-    Remove-Item $asset.name
-    Remove-Item -Force -Recurse "$($asset.name.Replace('.zip', ''))"
-
+    # Cleanup zip
+    Remove-Item $outputFilePath
 }
 
+function CloneAndUpdateManifests()
+{
+    if(-Not(Test-Path riot-manifests))
+    {
+        git clone https://github.com/Morilli/riot-manifests.git
+    }
 
+    git pull
+}
 
 & $MainFunction
