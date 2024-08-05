@@ -13,7 +13,10 @@ namespace RiotPrefill
         static async Task Main(string[] args)
         {
             var manifestParseTimer = Stopwatch.StartNew();
-            var manifestPath = @"C:\Users\Tim\Desktop\ADD5B351614ADF93.manifest";
+            //var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\league-client\14.9.581.9966.txt";
+            //var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\lol-game-client\14.9.5802108.txt";
+            var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\lol-standalone-client-content\14.9.5802108.txt";
+
             var manifest = new ReleaseManifest(manifestPath);
             AnsiConsole.Console.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
 
@@ -26,11 +29,6 @@ namespace RiotPrefill
 
                 var bundle = new ManifestBundle(originalBundle);
                 bundles.Add(bundle.ID, bundle);
-            }
-
-            foreach (var lang in manifest.Languages)
-            {
-                AnsiConsole.Console.WriteLine(lang.Name + " " + lang.ID);
             }
 
             var allChunksLookup = new Dictionary<string, BundleChunk>();
