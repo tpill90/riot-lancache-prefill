@@ -1,2 +1,6 @@
-/bin
-/currentManifest.txt
+bin
+obj
+/publish
+.vs
+*.ak
+lockfile
