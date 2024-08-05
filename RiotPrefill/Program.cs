@@ -1,26 +1,23 @@
-﻿using BattleNetPrefill.Utils.Debug;
-using ByteSizeLib;
-using LancachePrefill.Common.Extensions;
-using RiotPrefill.Models;
-using RiotPrefill.ReleaseManifestFile;
-using Spectre.Console;
-using SteamPrefill.Handlers;
-
-namespace RiotPrefill
+﻿namespace RiotPrefill
 {
-    internal class Program
+    public static class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main()
+        {
+            var rootPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\";
+            var allFiles = Directory.GetFiles($"{rootPath}", "*.*", SearchOption.AllDirectories);
+
+            foreach (var manifestPath in allFiles)
+            {
+                await DownloadManifestAsync(manifestPath);
+            }
+        }
+
+        private static async Task DownloadManifestAsync(string manifestPath)
         {
             var manifestParseTimer = Stopwatch.StartNew();
-            //var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\league-client\14.9.581.9966.txt";
-            //var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\lol-game-client\14.9.5802108.txt";
-            var manifestPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\lol-standalone-client-content\14.9.5802108.txt";
-
             var manifest = new ReleaseManifest(manifestPath);
             AnsiConsole.Console.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
-
-            //var asd = manifest.Bundles.First().Chunks.ToList();
 
             var bundles = new Dictionary<string, ManifestBundle>();
             for (var index = 0; index < manifest.Bundles.Count; index++)
@@ -61,10 +58,6 @@ namespace RiotPrefill
                 if (allChunksLookup.ContainsKey(chunk))
                 {
                     chunksToDownload.Add(allChunksLookup[chunk]);
-                }
-                else
-                {
-                    Debugger.Break();
                 }
             }
             chunksToDownload = chunksToDownload.DistinctBy(e => e.ID).ToList();

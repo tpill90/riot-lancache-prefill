@@ -1,9 +1,6 @@
 ﻿using LancachePrefill.Common;
-using Spectre.Console;
 using System.Collections.Concurrent;
 using LancachePrefill.Common.Enums;
-using LancachePrefill.Common.Extensions;
-using RiotPrefill.Models;
 using System.Net.Http.Headers;
 using RiotPrefill;
 
@@ -70,14 +67,6 @@ namespace SteamPrefill.Handlers
             _ansiConsole.LogMarkupError($"Download failed! {LightYellow(failedRequests.Count)} requests failed unexpectedly, see {LightYellow("app.log")} for more details.");
             _ansiConsole.WriteLine();
 
-            // Web requests frequently fail due to transient errors, so displaying all errors to the user is unnecessary or even confusing.
-            // However, if a request fails repeatedly then there might be an underlying issue preventing success.
-            // The number of failures could approach in the thousands or even more, so rather than spam the console
-            // we will instead log them as a batch to app.log
-            foreach (var failedRequest in failedRequests)
-            {
-                //FileLogger.LogEr($"Request failed");
-            }
             return false;
         }
 

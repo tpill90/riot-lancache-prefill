@@ -1,6 +1,4 @@
-﻿using RiotPrefill.Models;
-
-namespace RiotPrefill
+﻿namespace RiotPrefill
 {
     public static class TestParser
     {

@@ -47,16 +47,29 @@ function DownloadManifest([string] $productName, [string] $assetName)
         New-Item $outputDir -ItemType Directory | Out-Null
     }
 
-    $latestManifest = Get-ChildItem "$env:TEMP\RiotPrefill\riot-manifests\$productName\NA1\windows\$assetName\" `
-        | Sort-Object -Descending `
-        | Select-Object -First 1
+    $latestManifest = Get-ChildItem "$env:TEMP\RiotPrefill\riot-manifests\$productName\NA1\windows\$assetName\" | ForEach-Object {
+        # Extract the version number part from the file name (remove the .txt extension)
+        $versionString = $_ -replace '\.txt$', ''
+
+        # Convert the version string to a System.Version object
+        [PSCustomObject]@{
+            FileName = $_
+            FullName = $_.FullName
+            Version  = [System.Version]($versionString -replace '\.', '.')
+        }
+    } | Sort-Object -Descending -Property Version | ForEach-Object {
+        $_.FileName
+    } | Select-Object -First 1
+
     $versionNumber = $latestManifest.Name.Replace(".txt", "")
 
     if (Test-Path "$outputDir\$versionNumber.txt")
     {
         return "$outputDir\$versionNumber.txt"
     }
-    $latestManifestLink = $latestManifest | Get-Content
+    $latestManifestLink = Get-Content $latestManifest.FullName
+
+
 
     Invoke-WebRequest $latestManifestLink -OutFile "$outputDir\$versionNumber.txt"
 
