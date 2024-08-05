@@ -11,7 +11,6 @@
 
             LowerByteRange = startBytes.Value;
             UpperByteRange = endBytes.Value;
-
         }
 
         public string BundleKey { get; set; }
@@ -22,9 +21,14 @@
         // Bytes are an inclusive range.  Ex bytes 0->9 == 10 bytes
         public long TotalBytes => (UpperByteRange - LowerByteRange) + 1;
 
-        public bool Overlaps(Request request2, bool isBattleNetClient)
+        public override string ToString()
         {
-            int overlap = 4096 * 32;
+            return $"{LowerByteRange}-{UpperByteRange}";
+        }
+
+        public bool Overlaps(Request request2)
+        {
+            int overlap = 4096 * 1;
 
             if (LowerByteRange <= request2.LowerByteRange)
             {

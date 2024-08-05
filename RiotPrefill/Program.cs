@@ -2,6 +2,7 @@
 {
     public static class Program
     {
+        public static IAnsiConsole _ansiConsole = AnsiConsole.Console;
         public static async Task Main()
         {
             var rootPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\";
@@ -17,7 +18,7 @@
         {
             var manifestParseTimer = Stopwatch.StartNew();
             var manifest = new ReleaseManifest(manifestPath);
-            AnsiConsole.Console.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
+            _ansiConsole.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
 
             var bundles = new Dictionary<string, ManifestBundle>();
             for (var index = 0; index < manifest.Bundles.Count; index++)
@@ -43,14 +44,14 @@
             }
 
             ulong bitMask = 1 | (2 << 9);
-            //var filteredFiles = manifest.Files.Where(e => e.LanguageFlags == 0 || ((e.LanguageFlags & bitMask) != 0)).ToList();
-            var filteredFiles = manifest.Files.ToList();
+            var filteredFiles = manifest.Files.Where(e => e.LanguageFlags == 0 || ((e.LanguageFlags & bitMask) != 0)).ToList();
+            //var filteredFiles = manifest.Files.ToList();
 
             //TODO figure out language flags
             var fileChunks = filteredFiles.SelectMany(e => e.ChunkIDs)
                                           .Select(e => BitConverter.GetBytes(e).ToHexString())
                                           .ToList();
-            AnsiConsole.Console.MarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunks.Count)} chunks");
+            _ansiConsole.MarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunks.Count)} chunks");
 
             var chunksToDownload = new List<BundleChunk>();
             foreach (var chunk in fileChunks)
@@ -60,22 +61,21 @@
                     chunksToDownload.Add(allChunksLookup[chunk]);
                 }
             }
-            chunksToDownload = chunksToDownload.DistinctBy(e => e.ID).ToList();
+            var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.ID).ToList();
 
-            var totalSize = ByteSize.FromBytes(chunksToDownload.Sum(e => e.CompressedSize));
+            var totalSize = ByteSize.FromBytes(chunksToDownloadDeduped.Sum(e => e.CompressedSize));
+            _ansiConsole.MarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}");
 
-            AnsiConsole.Console.MarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}");
 
-            using var downloader = new DownloadHandler(AnsiConsole.Console);
-
-            var requests = chunksToDownload
+            var requests = chunksToDownloadDeduped
                            .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize))
                            .ToList();
+            //TODO these need to be combined into multiple ranges in the same request for a single bundle
             var coalesced = RequestUtils.CoalesceRequests(requests);
 
-            AnsiConsole.Console.MarkupLine($"Combined to {LightYellow(coalesced.Count)} requests");
+            _ansiConsole.MarkupLine($"Combined to {LightYellow(coalesced.Count)} requests");
+            using var downloader = new DownloadHandler(AnsiConsole.Console);
             await downloader.DownloadQueuedChunksAsync(coalesced);
-            Debugger.Break();
         }
     }
 }

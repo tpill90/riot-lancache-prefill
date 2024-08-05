@@ -84,7 +84,7 @@ namespace SteamPrefill.Handlers
 
             var failedRequests = new ConcurrentBag<Request>();
 
-            await Parallel.ForEachAsync(requestsToDownload, new ParallelOptions { MaxDegreeOfParallelism = 20 }, body: async (request, _) =>
+            await Parallel.ForEachAsync(requestsToDownload, new ParallelOptions { MaxDegreeOfParallelism = 25 }, body: async (request, _) =>
             {
                 try
                 {

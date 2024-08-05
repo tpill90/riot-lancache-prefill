@@ -1,7 +1,4 @@
-﻿using FlatSharp.Attributes;
-using FlatSharp;
-
-namespace RiotPrefill.Models
+﻿namespace RiotPrefill.Models
 {
     public class BundleChunk
     {
