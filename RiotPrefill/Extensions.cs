@@ -1,4 +1,4 @@
-﻿namespace LeagueTest
+﻿namespace RiotPrefill
 {
     public static class Extensions
     {

@@ -1,4 +1,4 @@
-﻿namespace RiotPrefill
+﻿namespace RiotPrefill.Models
 {
     /// <summary>
     /// Model that represents a request that could be made to a CDN.
@@ -19,7 +19,7 @@
         public long UpperByteRange { get; set; }
 
         // Bytes are an inclusive range.  Ex bytes 0->9 == 10 bytes
-        public long TotalBytes => (UpperByteRange - LowerByteRange) + 1;
+        public long TotalBytes => UpperByteRange - LowerByteRange + 1;
 
         public override string ToString()
         {

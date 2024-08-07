@@ -1,6 +1,4 @@
-﻿using RiotPrefill;
-
-namespace BattleNetPrefill.Utils.Debug
+﻿namespace RiotPrefill.Debug
 {
     //TODO should this be in debug?
     public static class RequestUtils
@@ -16,7 +14,7 @@ namespace BattleNetPrefill.Utils.Debug
             var coalesced = new List<Request>();
 
             // Coalescing any requests to the same URI that have sequential/overlapping byte ranges.
-            var requestsGroupedByUri = initialRequests.GroupBy(e => new { e.BundleKey}).ToList();
+            var requestsGroupedByUri = initialRequests.GroupBy(e => new { e.BundleKey }).ToList();
             foreach (var grouping in requestsGroupedByUri)
             {
                 var merged = grouping.OrderBy(e => e.LowerByteRange)

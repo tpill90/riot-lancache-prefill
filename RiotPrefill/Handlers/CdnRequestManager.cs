@@ -1,10 +1,4 @@
-﻿using LancachePrefill.Common;
-using System.Collections.Concurrent;
-using LancachePrefill.Common.Enums;
-using System.Net.Http.Headers;
-using RiotPrefill;
-
-namespace SteamPrefill.Handlers
+﻿namespace RiotPrefill.Handlers
 {
     public sealed class DownloadHandler : IDisposable
     {
