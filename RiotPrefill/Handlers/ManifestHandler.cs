@@ -39,7 +39,7 @@
         public async Task<byte[]> DownloadManifestAsync(ReleaseInfo release)
         {
             // Load from disk if manifest already exists
-            var cachedFileName = Path.Combine(AppConfig.CacheDir, $"{release._Release.product}-{release.ArtifactTypeId}-{release.Version}");
+            var cachedFileName = Path.Combine(AppConfig.CacheDir, $"{release._Release.product}-{release.ArtifactTypeId}-{release.Version}.manifest");
             if (ManifestIsCached(cachedFileName))
             {
                 return await File.ReadAllBytesAsync(cachedFileName);
