@@ -28,7 +28,7 @@
 
         public override string ToString()
         {
-            return $"{LowerByteRange}-{UpperByteRange}";
+            return $"{BundleKey}.bundle {LowerByteRange}-{UpperByteRange}";
         }
 
         public bool Overlaps(Request request2)
