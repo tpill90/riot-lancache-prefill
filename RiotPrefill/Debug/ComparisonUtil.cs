@@ -33,8 +33,12 @@
             comparisonResult.RealRequestsTotalSize = realRequests.SumTotalBytes();
 
             CompareRequests(generatedRequests, realRequests);
+
+            var missedRequestsSorted = realRequests.OrderByDescending(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
             comparisonResult.Misses.AddRange(realRequests);
-            comparisonResult.UnnecessaryRequests.AddRange(generatedRequests);
+
+            var unecessaryRequestsSorted = generatedRequests.OrderByDescending(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
+            comparisonResult.UnnecessaryRequests.AddRange(unecessaryRequestsSorted);
 
             comparisonResult.PrintOutput();
 

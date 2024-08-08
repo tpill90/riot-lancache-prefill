@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace RiotPrefill.Debug
+﻿namespace RiotPrefill.Debug
 {
     public class ComparisonResult
     {
