@@ -1,5 +1,5 @@
 // Global using directives
-
+global using BattleNetPrefill.Utils.Debug;
 global using System;
 global using System.Collections.Generic;
 global using System.Diagnostics;
@@ -32,3 +32,4 @@ global using RiotPrefill.Handlers;
 global using System.Net.Http;
 global using RiotPrefill.Models;
 global using RiotPrefill.Settings;
+global using System.Text.RegularExpressions;

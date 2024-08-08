@@ -5,6 +5,11 @@
     /// </summary>
     public sealed class Request
     {
+        public Request()
+        {
+
+        }
+
         public Request(string bundleKey, long? startBytes = null, long? endBytes = null)
         {
             BundleKey = bundleKey;

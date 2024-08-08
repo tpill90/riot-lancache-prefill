@@ -6,5 +6,10 @@
         {
             return BitConverter.ToString(data).Replace("-", "");
         }
+
+        public static ByteSize SumTotalBytes(this List<Request> requests)
+        {
+            return ByteSize.FromBytes(requests.Sum(e => e.TotalBytes));
+        }
     }
 }

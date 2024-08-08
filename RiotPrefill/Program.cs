@@ -3,8 +3,11 @@
     public static class Program
     {
         public static IAnsiConsole _ansiConsole = AnsiConsole.Console;
+
         public static async Task Main()
         {
+            AppConfig.CompareAgainstRealRequests = true;
+
             var manifestHandler = new ManifestHandler(_ansiConsole);
             var latestRelease = await manifestHandler.FindLatestProductReleaseAsync();
             var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
@@ -16,6 +19,17 @@
             var downloadQueue = BuildDownloadQueue(parsedManifest);
 
             using var downloader = new DownloadHandler(_ansiConsole);
+
+            if (AppConfig.CompareAgainstRealRequests)
+            {
+                var comparisonUtil = new ComparisonUtil();
+                await comparisonUtil.CompareAgainstRealRequestsAsync(downloadQueue);
+                return;
+            }
+            if (AppConfig.SkipDownloads)
+            {
+                return;
+            }
             await downloader.DownloadQueuedChunksAsync(downloadQueue);
         }
 
@@ -55,7 +69,7 @@
             var fileChunks = filteredFiles.SelectMany(e => e.ChunkIDs)
                                           .Select(e => BitConverter.GetBytes(e).ToHexString())
                                           .ToList();
-            _ansiConsole.MarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunks.Count)} chunks");
+            _ansiConsole.LogMarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunks.Count)} chunks");
 
             var chunksToDownload = new List<BundleChunk>();
             foreach (var chunk in fileChunks)
@@ -74,7 +88,7 @@
             var coalesced = RequestUtils.CoalesceRequests(requests);
 
             var totalSize = ByteSize.FromBytes(coalesced.Sum(e => e.TotalBytes));
-            _ansiConsole.MarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}, with {LightYellow(coalesced.Count)} requests");
+            _ansiConsole.LogMarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}, with {LightYellow(coalesced.Count)} requests");
 
             _ansiConsole.LogMarkupLine("Download queue built", timer);
             return coalesced;
