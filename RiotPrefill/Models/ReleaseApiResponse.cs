@@ -1,19 +1,40 @@
 ﻿namespace RiotPrefill.Models
 {
     //TODO this whole thing is awful, need to trim whats not needed and rename what is
-    public class ReleaseInfo
+    public sealed class ReleaseApiResponse
     {
-        public Release[] releases { get; set; }
+        public ReleaseInfo[] releases { get; set; }
     }
 
-    public class Release
+    public sealed class ReleaseInfo
     {
-        public Release1 release { get; set; }
-        public Compat_Version compat_version { get; set; }
-        public Download download { get; set; }
+        // Utility properties to make working with this response easier
+        public string ArtifactTypeId => _Release.ArtifactTypeId;
+        public string DownloadUrl => _DownloadInfo.url;
+        public Version Version => _Release.Version;
+        public string Platform => string.Join(",", _Release.labels.platform.values);
+        public string RiotPlatform => string.Join(",", _Release.labels.riotplatform.values);
+
+
+
+        // Deserialized properties, these are what comes off the response json verbatim
+
+        [JsonPropertyName("release")]
+        public Release _Release { get; set; }
+
+        [JsonPropertyName("compat_version")]
+        public Compat_Version _compat_version { get; set; }
+
+        [JsonPropertyName("download")]
+        public DownloadInfo _DownloadInfo { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ArtifactTypeId} - {Version}";
+        }
     }
 
-    public class Release1
+    public sealed class Release
     {
         public string product { get; set; }
         public string id { get; set; }
@@ -37,11 +58,9 @@
         }
     }
 
-    public class Labels
+    public sealed class Labels
     {
         public Buildtracker_Config buildtracker_config { get; set; }
-        public Code code { get; set; }
-        public Content content { get; set; }
         public Cpuarch cpuarch { get; set; }
         public Platform platform { get; set; }
 
@@ -55,74 +74,65 @@
         public RiotArtifact_Version_Id riotartifact_version_id { get; set; }
 
         public RiotCpu_Arch riotcpu_arch { get; set; }
+
+        [JsonPropertyName("riot:platform")]
         public RiotPlatform riotplatform { get; set; }
+
         public RiotRevision riotrevision { get; set; }
     }
 
-    public class Buildtracker_Config
+    public sealed class Buildtracker_Config
     {
         public string[] values { get; set; }
     }
 
-    public class Code
+    public sealed class Cpuarch
     {
         public string[] values { get; set; }
     }
 
-    public class Content
+    public sealed class Platform
     {
         public string[] values { get; set; }
     }
 
-    public class Cpuarch
+    public sealed class RiotAnticheat_Option
     {
         public string[] values { get; set; }
     }
 
-    public class Platform
+    public sealed class RiotArtifact_Type_Id
     {
         public string[] values { get; set; }
     }
 
-    public class RiotAnticheat_Option
+    public sealed class RiotArtifact_Version_Id
     {
         public string[] values { get; set; }
     }
 
-    public class RiotArtifact_Type_Id
+    public sealed class RiotCpu_Arch
     {
         public string[] values { get; set; }
     }
 
-    public class RiotArtifact_Version_Id
+    public sealed class RiotPlatform
     {
         public string[] values { get; set; }
     }
 
-    public class RiotCpu_Arch
+    public sealed class RiotRevision
     {
         public string[] values { get; set; }
     }
 
-    public class RiotPlatform
-    {
-        public string[] values { get; set; }
-    }
-
-    public class RiotRevision
-    {
-        public string[] values { get; set; }
-    }
-
-    public class Compat_Version
+    public sealed class Compat_Version
     {
         public string id { get; set; }
     }
 
-    public class Download
+    public sealed class DownloadInfo
     {
         public string url { get; set; }
-        public bool scd_required { get; set; }
     }
-
 }

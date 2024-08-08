@@ -9,7 +9,7 @@
             AppConfig.CompareAgainstRealRequests = true;
 
             var manifestHandler = new ManifestHandler(_ansiConsole);
-            var latestRelease = await manifestHandler.FindLatestProductReleaseAsync();
+            var latestRelease = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolStandaloneClientContent);
             var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
 
             var manifestParseTimer = Stopwatch.StartNew();
@@ -17,8 +17,6 @@
             _ansiConsole.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
 
             var downloadQueue = BuildDownloadQueue(parsedManifest);
-
-            using var downloader = new DownloadHandler(_ansiConsole);
 
             if (AppConfig.CompareAgainstRealRequests)
             {
@@ -30,6 +28,8 @@
             {
                 return;
             }
+
+            using var downloader = new DownloadHandler(_ansiConsole);
             await downloader.DownloadQueuedChunksAsync(downloadQueue);
         }
 

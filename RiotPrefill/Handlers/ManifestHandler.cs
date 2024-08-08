@@ -13,7 +13,7 @@
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "RiotNetwork/1.0.0");
         }
 
-        public async Task<Release> FindLatestProductReleaseAsync()
+        public async Task<ReleaseInfo> FindLatestProductReleaseAsync(ArtifactType artifactType)
         {
             //TODO parameterize
             var apiUrl = $"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/NA1?q[platform]=windows";
@@ -24,21 +24,22 @@
             response.EnsureSuccessStatusCode();
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            var releases = await JsonSerializer.DeserializeAsync(responseStream, SerializationContext.Default.ReleaseInfo);
+            var releaseApiResponse = await JsonSerializer.DeserializeAsync(responseStream, SerializationContext.Default.ReleaseApiResponse);
+            var releases = releaseApiResponse.releases;
 
-            var latestVersion = releases.releases
-                                            .Where(e => e.release.labels.platform.values.Contains("windows"))
-                                            .OrderByDescending(e => e.release.Version)
-                                            .First();
+            var latestVersion = releases.Where(e => e.Platform.Contains("windows"))
+                                                    .Where(e => e.ArtifactTypeId == artifactType.Value)
+                                                    .OrderByDescending(e => e.Version)
+                                                    .First();
 
-            _ansiConsole.LogMarkupLine($"Found latest version {LightYellow(latestVersion.release.Version)} for artifact {Cyan(latestVersion.release.ArtifactTypeId)}");
+            _ansiConsole.LogMarkupLine($"Found latest version {LightYellow(latestVersion.Version)} for artifact {Cyan(latestVersion.ArtifactTypeId)}");
             return latestVersion;
         }
 
-        public async Task<byte[]> DownloadManifestAsync(Release release)
+        public async Task<byte[]> DownloadManifestAsync(ReleaseInfo release)
         {
             // Load from disk if manifest already exists
-            var cachedFileName = Path.Combine(AppConfig.CacheDir, $"{release.release.product}-{release.release.ArtifactTypeId}-{release.release.Version}");
+            var cachedFileName = Path.Combine(AppConfig.CacheDir, $"{release._Release.product}-{release.ArtifactTypeId}-{release.Version}");
             if (ManifestIsCached(cachedFileName))
             {
                 return await File.ReadAllBytesAsync(cachedFileName);
@@ -48,7 +49,7 @@
             await _ansiConsole.StatusSpinner().StartAsync("Downloading manifest", async ctx =>
             {
                 var timer = Stopwatch.StartNew();
-                using var request = new HttpRequestMessage(HttpMethod.Get, release.download.url);
+                using var request = new HttpRequestMessage(HttpMethod.Get, release.DownloadUrl);
 
                 using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();

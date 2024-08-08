@@ -234,11 +234,6 @@
                             "public-win32-packed-now-public"
                         ]
                     },
-                    "code": {
-                        "values": [
-                            "public"
-                        ]
-                    },
                     "content": {
                         "values": [
                             "release"
@@ -673,16 +668,6 @@
                     "buildtracker_config": {
                         "values": [
                             "public-win32-packed-now-public"
-                        ]
-                    },
-                    "code": {
-                        "values": [
-                            "public"
-                        ]
-                    },
-                    "content": {
-                        "values": [
-                            "release"
                         ]
                     },
                     "cpuarch": {

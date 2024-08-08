@@ -33,3 +33,5 @@ global using System.Net.Http;
 global using RiotPrefill.Models;
 global using RiotPrefill.Settings;
 global using System.Text.RegularExpressions;
+global using Intellenum;
+global using JetBrains.Annotations;
