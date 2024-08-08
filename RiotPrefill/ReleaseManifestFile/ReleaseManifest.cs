@@ -21,6 +21,7 @@ namespace RiotPrefill.ReleaseManifestFile
 
         }
 
+        //TODO improve performance
         public ReleaseManifest(byte[] manifestBytes) : this(new MemoryStream(manifestBytes))
         {
 

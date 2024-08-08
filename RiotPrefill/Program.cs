@@ -9,14 +9,20 @@
             var latestRelease = await manifestHandler.FindLatestProductReleaseAsync();
             var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
 
-            await DownloadManifestAsync(manifestBytes);
+            var manifestParseTimer = Stopwatch.StartNew();
+            var parsedManifest = new ReleaseManifest(manifestBytes);
+            _ansiConsole.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
+
+            var downloadQueue = BuildDownloadQueue(parsedManifest);
+
+            using var downloader = new DownloadHandler(_ansiConsole);
+            await downloader.DownloadQueuedChunksAsync(downloadQueue);
         }
 
-        private static async Task DownloadManifestAsync(byte[] manifestBytes)
+        //TODO improve performance
+        private static List<Request> BuildDownloadQueue(ReleaseManifest manifest)
         {
-            var manifestParseTimer = Stopwatch.StartNew();
-            var manifest = new ReleaseManifest(manifestBytes);
-            _ansiConsole.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
+            var timer = Stopwatch.StartNew();
 
             var bundles = new Dictionary<string, ManifestBundle>();
             for (var index = 0; index < manifest.Bundles.Count; index++)
@@ -61,19 +67,17 @@
             }
             var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.ID).ToList();
 
-            var totalSize = ByteSize.FromBytes(chunksToDownloadDeduped.Sum(e => e.CompressedSize));
-            _ansiConsole.MarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}");
-
-
             var requests = chunksToDownloadDeduped
-                           .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize))
-                           .ToList();
+                                     .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize))
+                                     .ToList();
             //TODO these need to be combined into multiple ranges in the same request for a single bundle
             var coalesced = RequestUtils.CoalesceRequests(requests);
 
-            _ansiConsole.MarkupLine($"Combined to {LightYellow(coalesced.Count)} requests");
-            using var downloader = new DownloadHandler(AnsiConsole.Console);
-            await downloader.DownloadQueuedChunksAsync(coalesced);
+            var totalSize = ByteSize.FromBytes(coalesced.Sum(e => e.TotalBytes));
+            _ansiConsole.MarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}, with {LightYellow(coalesced.Count)} requests");
+
+            _ansiConsole.LogMarkupLine("Download queue built", timer);
+            return coalesced;
         }
     }
 }
