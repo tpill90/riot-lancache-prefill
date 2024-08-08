@@ -3,6 +3,7 @@ using FlatSharp;
 
 namespace RiotPrefill.ReleaseManifestFile
 {
+    //TODO this was taken from LeagueToolkit.  Should probably reference and use that project instead of copy pasting in here
     public class ReleaseManifest
     {
         public ulong ID { get; private set; }
@@ -15,7 +16,15 @@ namespace RiotPrefill.ReleaseManifestFile
 
         private readonly ReleaseManifestBody _body;
 
-        public ReleaseManifest(string fileLocation) : this(File.OpenRead(fileLocation)) { }
+        public ReleaseManifest(string fileLocation) : this(File.OpenRead(fileLocation))
+        {
+
+        }
+
+        public ReleaseManifest(byte[] manifestBytes) : this(new MemoryStream(manifestBytes))
+        {
+
+        }
 
         public ReleaseManifest(Stream stream)
         {

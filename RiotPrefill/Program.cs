@@ -5,19 +5,17 @@
         public static IAnsiConsole _ansiConsole = AnsiConsole.Console;
         public static async Task Main()
         {
-            var rootPath = @"C:\Users\Tim\AppData\Local\Temp\RiotPrefill\downloaded-manifests\";
-            var allFiles = Directory.GetFiles($"{rootPath}", "*.*", SearchOption.AllDirectories);
+            var manifestHandler = new ManifestHandler(_ansiConsole);
+            var latestRelease = await manifestHandler.FindLatestProductReleaseAsync();
+            var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
 
-            foreach (var manifestPath in allFiles)
-            {
-                await DownloadManifestAsync(manifestPath);
-            }
+            await DownloadManifestAsync(manifestBytes);
         }
 
-        private static async Task DownloadManifestAsync(string manifestPath)
+        private static async Task DownloadManifestAsync(byte[] manifestBytes)
         {
             var manifestParseTimer = Stopwatch.StartNew();
-            var manifest = new ReleaseManifest(manifestPath);
+            var manifest = new ReleaseManifest(manifestBytes);
             _ansiConsole.LogMarkupLine("Finished parsing manifest", manifestParseTimer);
 
             var bundles = new Dictionary<string, ManifestBundle>();

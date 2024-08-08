@@ -1,4 +1,7 @@
-﻿namespace RiotPrefill.Handlers
+﻿using System.Net.Http;
+using System.Threading;
+
+namespace RiotPrefill.Handlers
 {
     public sealed class DownloadHandler : IDisposable
     {
