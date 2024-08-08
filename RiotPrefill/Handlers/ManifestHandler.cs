@@ -68,69 +68,49 @@
             return !AppConfig.NoLocalCache && File.Exists(manifestFileName);
         }
 
-        ////TODO document
-        //public List<QueuedRequest> ParseManifest(byte[] rawManifestBytes, ManifestUrl manifestDownloadUrl)
-        //{
-        //    List<QueuedRequest> chunkDownloadQueue = null;
-        //    _ansiConsole.StatusSpinner().Start("Parsing download manifest", ctx =>
-        //    {
-        //        var timer = Stopwatch.StartNew();
+        public async Task<string> FindPatchlineReleaseAsync()
+        {
+            //TODO parameterize
+            var apiUrl = $"https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines";
+            using var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
 
-        //        // For whatever reason, EGS manifests are in two different formats : JSON + Binary.
-        //        // We will determine which format is used, and parse it appropriately
-        //        if (rawManifestBytes[0] == '{')
-        //        {
-        //            // Deserialize JSON Manifest
-        //            JsonManifest manifest = JsonSerializer.Deserialize(rawManifestBytes, SerializationContext.Default.JsonManifest);
-        //            chunkDownloadQueue = BuildDownloadQueue(manifest, manifestDownloadUrl);
-        //        }
-        //        else
-        //        {
-        //            // Otherwise Manifest is in a binary format
-        //            BinaryManifest manifest = BinaryManifest.Parse(rawManifestBytes, manifestDownloadUrl);
-        //            chunkDownloadQueue = BuildDownloadQueue(manifest);
-        //        }
+            // Send request
+            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
 
-        //        _ansiConsole.LogMarkupVerbose("Parsed manifest + built download queue", timer);
-        //    });
-        //    return chunkDownloadQueue;
-        //}
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            var releaseApiResponse = await JsonSerializer.DeserializeAsync(responseStream, SerializationContext.Default.PatchlinesResponse);
+            var manifestUrl = releaseApiResponse.keystoneproductsleague_of_legendspatchlineslive.platforms.win.configurations.First(e => e.id == "NA").patch_url;
 
-        ////TODO should the ManifestUrl.BasePath be refactored out?
-        //private List<QueuedRequest> BuildDownloadQueue(JsonManifest jsonManifest, ManifestUrl manifestUrl)
-        //{
-        //    var guids = jsonManifest.ChunkHashList.Keys.ToList();
 
-        //    var downloadList = new List<QueuedRequest>();
-        //    foreach (var guid in guids)
-        //    {
-        //        string hashHexString = jsonManifest.ChunkHashList[guid].BlobToNum().ToString("X16");
-        //        string groupNum = jsonManifest.DataGroupList[guid].BlobToNum().ToString("D2");
+            return manifestUrl;
+        }
 
-        //        var downloadChunk = new QueuedRequest
-        //        {
-        //            //TODO refactor this, hard to read
-        //            DownloadUrl = Path.Join(manifestUrl.ChunkBaseUrl, jsonManifest.GetChunkDir(), groupNum, $"{hashHexString}_{guid}.chunk"),
-        //            DownloadSizeBytes = jsonManifest.ChunkFilesizeList[guid].BlobToNum()
-        //        };
-        //        downloadList.Add(downloadChunk);
-        //    }
+        public async Task<byte[]> DownloadManifestAsync(string url)
+        {
+            // Load from disk if manifest already exists
+            var cachedFileName = url.Split("/").Last();
+            if (ManifestIsCached(cachedFileName))
+            {
+                return await File.ReadAllBytesAsync(cachedFileName);
+            }
 
-        //    return downloadList;
-        //}
+            byte[] responseAsBytes = null;
+            await _ansiConsole.StatusSpinner().StartAsync("Downloading manifest", async ctx =>
+            {
+                var timer = Stopwatch.StartNew();
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-        //private List<QueuedRequest> BuildDownloadQueue(BinaryManifest binaryManifest)
-        //{
-        //    var downloadQueue = binaryManifest.ChunkDataLookup.Values
-        //                                     .DistinctBy(e => e.Guid)
-        //                                     .Select(chunk => new QueuedRequest
-        //                                     {
-        //                                         DownloadSizeBytes = chunk.CompressedFileSize,
-        //                                         DownloadUrl = Path.Combine(binaryManifest.Url.ChunkBaseUrl, chunk.Uri)
-        //                                     })
-        //                                     .ToList();
+                using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
 
-        //    return downloadQueue;
-        //}
+                responseAsBytes = await response.Content.ReadAsByteArrayAsync();
+                // Cache to disk
+                await File.WriteAllBytesAsync(cachedFileName, responseAsBytes);
+
+                _ansiConsole.LogMarkupLine("Downloaded manifest", timer);
+            });
+            return responseAsBytes;
+        }
     }
 }

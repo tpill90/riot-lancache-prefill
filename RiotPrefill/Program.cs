@@ -9,8 +9,10 @@
             AppConfig.CompareAgainstRealRequests = true;
 
             var manifestHandler = new ManifestHandler(_ansiConsole);
-            var latestRelease = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolGameClient);
-            var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
+            //var latestRelease = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolGameClient);
+            //var manifestBytes = await manifestHandler.DownloadManifestAsync(latestRelease);
+            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync();
+            var manifestBytes = await manifestHandler.DownloadManifestAsync(manifestUrl);
 
             var manifestParseTimer = Stopwatch.StartNew();
             var parsedManifest = new ReleaseManifest(manifestBytes);

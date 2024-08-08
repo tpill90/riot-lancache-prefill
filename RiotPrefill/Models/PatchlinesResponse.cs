@@ -2,8 +2,8 @@
 {
     public class PatchlinesResponse
     {
+        [JsonPropertyName("keystone.products.league_of_legends.patchlines.live")]
         public KeystoneProductsLeague_Of_LegendsPatchlinesLive keystoneproductsleague_of_legendspatchlineslive { get; set; }
-        public KeystoneProductsLeague_Of_LegendsPatchlinesPbe keystoneproductsleague_of_legendspatchlinespbe { get; set; }
     }
 
     public class KeystoneProductsLeague_Of_LegendsPatchlinesLive
@@ -15,7 +15,7 @@
 
     public class Metadata
     {
-        public Default _default { get; set; }
+        public Default2 _default { get; set; }
         public Hkg hkg { get; set; }
         public Installer installer { get; set; }
         public Mac mac { get; set; }
@@ -23,7 +23,7 @@
         public Vnm vnm { get; set; }
     }
 
-    public class Default
+    public class Default2
     {
         public Alias alias { get; set; }
         public string[] available_platforms { get; set; }
@@ -288,12 +288,6 @@
         public string url { get; set; }
     }
 
-    public class KeystoneProductsLeague_Of_LegendsPatchlinesPbe
-    {
-        public Metadata3 metadata { get; set; }
-        public Platforms1 platforms { get; set; }
-        public string version { get; set; }
-    }
 
     public class Metadata3
     {
@@ -395,178 +389,5 @@
     {
         public object platforms { get; set; }
         public string product_id { get; set; }
-    }
-
-    public class Platforms1
-    {
-        public Mac3 mac { get; set; }
-        public Win1 win { get; set; }
-    }
-
-    public class Mac3
-    {
-        public bool auto_patch { get; set; }
-        public Configuration2[] configurations { get; set; }
-        public object dependencies { get; set; }
-        public string deprecated_cloudfront_id { get; set; }
-        public string install_dir { get; set; }
-    }
-
-    public class Configuration2
-    {
-        public string[] allowed_http_fallback_hostnames { get; set; }
-        public string bundles_url { get; set; }
-        public object[] dependencies { get; set; }
-        public object entitlements { get; set; }
-        public string[] excluded_paths { get; set; }
-        public string id { get; set; }
-        public bool launchable_on_update_fail { get; set; }
-        public Launcher2 launcher { get; set; }
-        public Locale_Data2 locale_data { get; set; }
-        public Metadata4 metadata { get; set; }
-        public string patch_notes_url { get; set; }
-        public string patch_url { get; set; }
-        public Region_Data2 region_data { get; set; }
-        public Secondary_Patchlines2[] secondary_patchlines { get; set; }
-        public string seed_url { get; set; }
-        public object[] tags { get; set; }
-    }
-
-    public class Launcher2
-    {
-        public string[] arguments { get; set; }
-        public string component_id { get; set; }
-        public Executables2 executables { get; set; }
-    }
-
-    public class Executables2
-    {
-        public string app { get; set; }
-        public string exe { get; set; }
-    }
-
-    public class Locale_Data2
-    {
-        public string[] available_locales { get; set; }
-        public string default_locale { get; set; }
-    }
-
-    public class Metadata4
-    {
-        public Alias14 alias { get; set; }
-        public string theme_manifest { get; set; }
-    }
-
-    public class Alias14
-    {
-        public object platforms { get; set; }
-        public string product_id { get; set; }
-    }
-
-    public class Region_Data2
-    {
-        public string[] available_regions { get; set; }
-        public string default_region { get; set; }
-    }
-
-    public class Secondary_Patchlines2
-    {
-        public string[] allowed_http_fallback_hostnames { get; set; }
-        public string bundles_url { get; set; }
-        public object[] excluded_paths { get; set; }
-        public string id { get; set; }
-        public string path { get; set; }
-        public object[] tags { get; set; }
-        public string url { get; set; }
-    }
-
-    public class Win1
-    {
-        public bool auto_patch { get; set; }
-        public Configuration3[] configurations { get; set; }
-        public object dependencies { get; set; }
-        public string deprecated_cloudfront_id { get; set; }
-        public string icon_path { get; set; }
-        public string install_dir { get; set; }
-        public string[] rogue_process_checklist { get; set; }
-    }
-
-    public class Configuration3
-    {
-        public string[] allowed_http_fallback_hostnames { get; set; }
-        public string bundles_url { get; set; }
-        public Dependency1[] dependencies { get; set; }
-        public object entitlements { get; set; }
-        public string[] excluded_paths { get; set; }
-        public string id { get; set; }
-        public bool launchable_on_update_fail { get; set; }
-        public Launcher3 launcher { get; set; }
-        public Locale_Data3 locale_data { get; set; }
-        public Metadata5 metadata { get; set; }
-        public string patch_notes_url { get; set; }
-        public string patch_url { get; set; }
-        public Region_Data3 region_data { get; set; }
-        public Secondary_Patchlines3[] secondary_patchlines { get; set; }
-        public string seed_url { get; set; }
-        public object[] tags { get; set; }
-    }
-
-    public class Launcher3
-    {
-        public string[] arguments { get; set; }
-        public string component_id { get; set; }
-        public Executables3 executables { get; set; }
-    }
-
-    public class Executables3
-    {
-        public string app { get; set; }
-        public string exe { get; set; }
-    }
-
-    public class Locale_Data3
-    {
-        public string[] available_locales { get; set; }
-        public string default_locale { get; set; }
-    }
-
-    public class Metadata5
-    {
-        public Alias15 alias { get; set; }
-        public string theme_manifest { get; set; }
-    }
-
-    public class Alias15
-    {
-        public object platforms { get; set; }
-        public string product_id { get; set; }
-    }
-
-    public class Region_Data3
-    {
-        public string[] available_regions { get; set; }
-        public string default_region { get; set; }
-    }
-
-    public class Dependency1
-    {
-        public string[] args { get; set; }
-        public bool elevate { get; set; }
-        public string hash { get; set; }
-        public string id { get; set; }
-        public string min_version { get; set; }
-        public string url { get; set; }
-        public string version { get; set; }
-    }
-
-    public class Secondary_Patchlines3
-    {
-        public string[] allowed_http_fallback_hostnames { get; set; }
-        public string bundles_url { get; set; }
-        public object[] excluded_paths { get; set; }
-        public string id { get; set; }
-        public string path { get; set; }
-        public object[] tags { get; set; }
-        public string url { get; set; }
     }
 }
