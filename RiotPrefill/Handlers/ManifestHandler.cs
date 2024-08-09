@@ -1,4 +1,6 @@
-﻿namespace RiotPrefill.Handlers
+﻿using RiotPrefill.Models;
+
+namespace RiotPrefill.Handlers
 {
     public sealed class ManifestHandler
     {
@@ -89,7 +91,7 @@
         public async Task<byte[]> DownloadManifestAsync(string url)
         {
             // Load from disk if manifest already exists
-            var cachedFileName = url.Split("/").Last();
+            var cachedFileName = Path.Combine(AppConfig.CacheDir, url.Split("/").Last());
             if (ManifestIsCached(cachedFileName))
             {
                 return await File.ReadAllBytesAsync(cachedFileName);

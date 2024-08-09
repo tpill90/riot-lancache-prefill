@@ -57,6 +57,8 @@
                 }
                 else
                 {
+                    //TODO this isn't correct in the way that I'm doing it.  There can be duplicate chunkids between bundles, because the chunk id is only unique for that bundle
+                    var existing = allChunksLookup[chunk.ID];
                     dupes.Add(chunk);
                 }
             }
@@ -80,16 +82,23 @@
                 }
             }
             var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.ID).ToList();
+            _ansiConsole.LogMarkupLine($"Deduped {LightYellow(chunksToDownload.Count)} chunks down to {Cyan(chunksToDownloadDeduped.Count)}");
+
+
+            var test = chunksToDownload.GroupBy(e => e.ID)
+                                       .Where(e => e.Count() > 1)
+                                       .ToList();
 
             var requests = chunksToDownloadDeduped
-                                     .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize))
+                                     .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize - 1))
                                      .ToList();
+
             //TODO these need to be combined into multiple ranges in the same request for a single bundle
             var coalesced = RequestUtils.CoalesceRequests(requests);
 
+
             var totalSize = ByteSize.FromBytes(coalesced.Sum(e => e.TotalBytes));
             _ansiConsole.LogMarkupLine($"Total download size : {Magenta(totalSize.ToDecimalString())}, with {LightYellow(coalesced.Count)} requests");
-
             _ansiConsole.LogMarkupLine("Download queue built", timer);
             return coalesced;
         }

@@ -1,10 +1,14 @@
-﻿namespace RiotPrefill.Debug
+﻿using RiotPrefill.Models;
+
+namespace RiotPrefill.Debug
 {
     //TODO rename
     public sealed class ComparisonUtil
     {
         public async Task<ComparisonResult> CompareAgainstRealRequestsAsync(List<Request> generatedRequests)
         {
+            File.WriteAllLines(Path.Combine(AppConfig.CacheDir, $"generated.txt"), generatedRequests.OrderBy(e => e.BundleKey).ThenBy(e => e.LowerByteRange).Select(e => e.ToString()));
+
             AnsiConsole.WriteLine();
             AnsiConsole.Console.LogMarkupLine("Comparing requests against real request logs...");
             var timer = Stopwatch.StartNew();
@@ -12,35 +16,28 @@
             //TODO remove hardcoding
             var lines = await File.ReadAllLinesAsync(@"C:\Users\Tim\Dropbox\Programming\Lancache-Prefills\riot-lancache-prefill\Logs\LeagueOfLegends.log");
             var realRequests = NginxLogParser.ParseRequestLogs(lines);
-            //var realRequests = NginxLogParser.GetSavedRequestLogs(AppConfig.LogFileBasePath, product);
+            File.WriteAllLines(Path.Combine(AppConfig.CacheDir, $"realRequests.txt"), realRequests.OrderBy(e => e.BundleKey).ThenBy(e => e.LowerByteRange).Select(e => e.ToString()));
 
             var comparisonResult = new ComparisonResult
             {
                 RequestMadeCount = generatedRequests.Count,
                 RealRequestCount = realRequests.Count,
-
-                //RequestsWithoutSize = generatedRequests.Count(e => e.DownloadWholeFile),
-                //RealRequestsWithoutSize = realRequests.Count(e => e.TotalBytes == 0 || e.DownloadWholeFile)
             };
-
-            //// Populating the response size for any "whole file" requests
-            //using var fileSizeProvider = new FileSizeProvider(product, _blizzardCdnBaseUri);
-            //await fileSizeProvider.PopulateRequestSizesAsync(generatedRequests);
-            //await fileSizeProvider.PopulateRequestSizesAsync(realRequests);
-            //fileSizeProvider.Save();
 
             comparisonResult.GeneratedRequestTotalSize = generatedRequests.SumTotalBytes();
             comparisonResult.RealRequestsTotalSize = realRequests.SumTotalBytes();
 
             CompareRequests(generatedRequests, realRequests);
 
-            var missedRequestsSorted = realRequests.OrderByDescending(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
-            comparisonResult.Misses.AddRange(realRequests);
+            var missedRequestsSorted = realRequests.OrderBy(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
+            comparisonResult.Misses.AddRange(missedRequestsSorted);
 
-            var unecessaryRequestsSorted = generatedRequests.OrderByDescending(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
-            comparisonResult.UnnecessaryRequests.AddRange(unecessaryRequestsSorted);
+            var unnecessaryRequestsSorted = generatedRequests.OrderBy(e => e.BundleKey).ThenBy(e => e.LowerByteRange);
+            comparisonResult.UnnecessaryRequests.AddRange(unnecessaryRequestsSorted);
 
             comparisonResult.PrintOutput();
+            File.WriteAllLines(Path.Combine(AppConfig.CacheDir, $"misses.txt"), missedRequestsSorted.Select(e => e.ToString()));
+            File.WriteAllLines(Path.Combine(AppConfig.CacheDir, $"unnecessary.txt"), unnecessaryRequestsSorted.Select(e => e.ToString()));
 
             AnsiConsole.Console.LogMarkupLine("Comparison complete!", timer);
             return comparisonResult;
