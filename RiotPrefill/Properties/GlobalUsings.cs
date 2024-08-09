@@ -35,3 +35,6 @@ global using System.Text.RegularExpressions;
 global using Intellenum;
 global using JetBrains.Annotations;
 global using System.Threading;
+global using CommunityToolkit.HighPerformance.Buffers;
+global using FlatSharp;
+

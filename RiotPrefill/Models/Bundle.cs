@@ -1,4 +1,6 @@
-﻿namespace RiotPrefill.Models
+﻿using Vogen;
+
+namespace RiotPrefill.Models
 {
     //TODO document
     public sealed class Bundle
@@ -6,13 +8,13 @@
         /// <summary>
         /// The bundle identifier which will be referenced when making a CDN request
         /// </summary>
-        public string Id { get; }
+        public BundleId Id { get; }
 
         public List<BundleChunk> Chunks { get; } = new List<BundleChunk>();
 
         public Bundle(ReleaseManifestBundle source)
         {
-            Id =  string.Format("{0:X16}", source.ID);
+            Id = BundleId.From(string.Format("{0:X16}", source.ID));
 
             for (var i = 0; i < source.Chunks.Count; i++)
             {
@@ -36,7 +38,10 @@
 
         public override string ToString()
         {
-            return Id;
+            return Id.Value;
         }
     }
+
+    [ValueObject<string>]
+    public readonly partial struct BundleId { }
 }

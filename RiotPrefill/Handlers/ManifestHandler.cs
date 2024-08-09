@@ -119,16 +119,12 @@
         {
             var timer = Stopwatch.StartNew();
 
-            var bundles = new Dictionary<string, Bundle>();
-            foreach (var originalBundle in manifest.Bundles)
-            {
-                var bundle = new Bundle(originalBundle);
-                bundles.Add(bundle.Id, bundle);
-            }
+            Dictionary<BundleId, Bundle> bundleLookup = manifest.Bundles.Select(originalBundle => new Bundle(originalBundle))
+                                                           .ToDictionary(bundle => bundle.Id);
 
             var allChunksLookup = new Dictionary<string, BundleChunk>();
             var dupes = new List<BundleChunk>();
-            foreach (var chunk in bundles.Values.SelectMany(e => e.Chunks).ToList())
+            foreach (var chunk in bundleLookup.Values.SelectMany(e => e.Chunks).ToList())
             {
                 if (!allChunksLookup.ContainsKey(chunk.Id))
                 {
@@ -169,7 +165,7 @@
                                        .ToList();
 
             var requests = chunksToDownloadDeduped
-                                     .Select(e => new Request(e.BundleId, e.OffsetFromStart, e.UpperBound))
+                                     .Select(e => new Request(e.BundleId.Value, e.OffsetFromStart, e.UpperBound))
                                      .ToList();
 
             //TODO these need to be combined into multiple ranges in the same request for a single bundle

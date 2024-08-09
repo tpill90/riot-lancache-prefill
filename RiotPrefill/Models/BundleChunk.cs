@@ -5,7 +5,7 @@
     {
         public string Id { get; set; }
 
-        public string BundleId { get; set; }
+        public BundleId BundleId { get; set; }
 
         /// <summary>
         /// This is the lower bound of the chunk, the offset from the beginning of the file
@@ -13,7 +13,7 @@
         public uint OffsetFromStart { get; set; } = 0;
         public uint CompressedSize { get; set; }
 
-        public uint UpperBound => OffsetFromStart + CompressedSize;
+        public uint UpperBound => OffsetFromStart + CompressedSize - 1;
 
         public override string ToString()
         {

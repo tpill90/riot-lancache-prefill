@@ -1,7 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-using FlatSharp;
-
-namespace RiotPrefill.ReleaseManifestFile
+﻿namespace RiotPrefill.ReleaseManifestFile
 {
     /// <summary>
     /// TODO
@@ -11,15 +8,11 @@ namespace RiotPrefill.ReleaseManifestFile
     /// I would like to use the more recent beta versions of LeagueToolkit to see if the performance is fixed in it, however
     /// it errors out with some sort of NotImplementedException.  I should maybe look into this in the future and see what the deal is.
     /// </summary>
-    public class ReleaseManifest
+    public sealed class ReleaseManifest
     {
         public ulong ID { get; private set; }
         public IList<ReleaseManifestBundle> Bundles => this._body.Bundles;
-        public IList<ReleaseManifestLanguage> Languages => this._body.Languages;
         public IList<LeagueToolkit.IO.ReleaseManifestFile.ReleaseManifestFile> Files => this._body.Files;
-        public IList<ReleaseManifestDirectory> Directories => this._body.Directories;
-        public IList<ReleaseManifestEncryptionKey> EncryptionKeys => this._body.EncryptionKeys;
-        public IList<ReleaseManifestChunkingParameter> ChunkingParameters => this._body.ChunkingParameters;
 
         private readonly ReleaseManifestBody _body;
 

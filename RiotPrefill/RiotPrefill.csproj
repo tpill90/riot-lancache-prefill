@@ -46,6 +46,7 @@
 
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0029" />
     <PackageReference Include="System.IO.Hashing" Version="8.0.0-preview.6.23329.7" />
+    <PackageReference Include="Vogen" Version="4.0.17" />
     <PackageReference Include="ZstdSharp.Port" Version="0.7.2" />
 
     <!-- Custom CliFx build, allows for top level exception handling in application code, instead of CliFx swallowing all exceptions -->
