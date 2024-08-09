@@ -12,7 +12,6 @@ global using ByteSizeLib;
 global using LancachePrefill.Common.Extensions;
 global using LeagueToolkit.IO.ReleaseManifestFile;
 global using RiotPrefill.Models;
-global using RiotPrefill.ReleaseManifestFile;
 global using Spectre.Console;
 global using static LancachePrefill.Common.SpectreFormatters;
 global using AnsiConsoleExtensions = LancachePrefill.Common.Extensions.AnsiConsoleExtensions;

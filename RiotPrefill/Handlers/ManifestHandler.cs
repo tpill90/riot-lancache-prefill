@@ -1,5 +1,6 @@
 ﻿namespace RiotPrefill.Handlers
 {
+    //TODO comment everything in here
     public sealed class ManifestHandler
     {
         private readonly IAnsiConsole _ansiConsole;
@@ -86,13 +87,13 @@
             return manifestUrl;
         }
 
-        public async Task<byte[]> DownloadManifestAsync(string url)
+        public async Task<string> DownloadManifestAsync(string url)
         {
             // Load from disk if manifest already exists
             var cachedFileName = Path.Combine(AppConfig.CacheDir, url.Split("/").Last());
             if (ManifestIsCached(cachedFileName))
             {
-                return await File.ReadAllBytesAsync(cachedFileName);
+                return cachedFileName;
             }
 
             byte[] responseAsBytes = null;
@@ -110,7 +111,7 @@
 
                 _ansiConsole.LogMarkupLine("Downloaded manifest", timer);
             });
-            return responseAsBytes;
+            return cachedFileName;
         }
 
         //TODO improve performance
