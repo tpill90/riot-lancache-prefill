@@ -6,7 +6,7 @@
 
         public static async Task Main()
         {
-            AppConfig.CompareAgainstRealRequests = true;
+            //AppConfig.CompareAgainstRealRequests = true;
 
             // Downloading manifest
             var parseTimer = Stopwatch.StartNew();
