@@ -1,6 +1,7 @@
 ﻿using RiotPrefill.Handlers;
 using System.Diagnostics;
 using LeagueToolkit.IO.ReleaseManifestFile;
+using RiotPrefill.ReleaseManifestFile;
 using Spectre.Console;
 
 namespace RiotPrefill.Test.DownloadTests

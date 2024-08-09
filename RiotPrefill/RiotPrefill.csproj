@@ -18,13 +18,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestBody.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestBundle.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestBundleChunk.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestChunkingParameter.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestDirectory.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestEncryptionKey.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestFile.fbs" />
+    <FlatSharpSchema Include="ReleaseManifestFile/ReleaseManifestLanguage.fbs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- External Packages -->
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" />
+    <PackageReference Include="FlatSharp.Compiler" Version="7.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageReference Include="Intellenum" Version="1.0.0-beta.3" />
-    <PackageReference Include="LeagueToolkit" Version="3.0.3" />
+    <!--<PackageReference Include="LeagueToolkit" Version="3.0.3" />-->
     <PackageReference Include="ThisAssembly.AssemblyInfo" Version="1.2.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0029" />
+    <PackageReference Include="System.IO.Hashing" Version="8.0.0-preview.6.23329.7" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.7.2" />
 
     <!-- Custom CliFx build, allows for top level exception handling in application code, instead of CliFx swallowing all exceptions -->
     <Reference Include="CliFx">
