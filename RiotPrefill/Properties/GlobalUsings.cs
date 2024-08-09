@@ -35,3 +35,4 @@ global using RiotPrefill.Settings;
 global using System.Text.RegularExpressions;
 global using Intellenum;
 global using JetBrains.Annotations;
+global using System.Threading;

@@ -1,13 +1,11 @@
-﻿using System.Net.Http;
-using System.Threading;
-
-namespace RiotPrefill.Handlers
+﻿namespace RiotPrefill.Handlers
 {
     public sealed class DownloadHandler : IDisposable
     {
         private readonly IAnsiConsole _ansiConsole;
-        private string _currentCdn => "lol.dyn.riotcdn.net";
         private readonly HttpClient _client;
+
+        private string _currentCdn => "lol.dyn.riotcdn.net";
 
         /// <summary>
         /// The URL/IP Address where the Lancache has been detected.
@@ -73,8 +71,7 @@ namespace RiotPrefill.Handlers
         /// </summary>
         /// <param name="forceRecache">When specified, will cause the cache to delete the existing cached data for a request, and re-download it again.</param>
         /// <returns>A list of failed requests</returns>
-        public async Task<ConcurrentBag<Request>> AttemptDownloadAsync(ProgressContext ctx, string taskTitle, List<Request> requestsToDownload,
-                                                                                bool forceRecache = false)
+        public async Task<ConcurrentBag<Request>> AttemptDownloadAsync(ProgressContext ctx, string taskTitle, List<Request> requestsToDownload, bool forceRecache = false)
         {
             double requestTotalSize = requestsToDownload.Sum(e => e.TotalBytes);
             var progressTask = ctx.AddTask(taskTitle, new ProgressTaskSettings { MaxValue = requestTotalSize });

@@ -14,7 +14,7 @@ namespace RiotPrefill.Debug
             var timer = Stopwatch.StartNew();
 
             //TODO remove hardcoding
-            var lines = await File.ReadAllLinesAsync(@"C:\Users\Tim\Dropbox\Programming\Lancache-Prefills\riot-lancache-prefill\Logs\LeagueOfLegends.log");
+            var lines = await File.ReadAllLinesAsync(@"C:\Users\Tim\Dropbox\Programming\Lancache-Prefills\RiotPrefill\Logs\LeagueOfLegends.log");
             var realRequests = NginxLogParser.ParseRequestLogs(lines);
             File.WriteAllLines(Path.Combine(AppConfig.CacheDir, $"realRequests.txt"), realRequests.OrderBy(e => e.BundleKey).ThenBy(e => e.LowerByteRange).Select(e => e.ToString()));
 
