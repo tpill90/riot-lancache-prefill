@@ -14,12 +14,19 @@
         {
             Id =  string.Format("{0:X16}", source.ID);
 
-            foreach (var sourceChunk in source.Chunks)
+            for (var i = 0; i < source.Chunks.Count; i++)
             {
-                Chunks.Add(new BundleChunk(sourceChunk, Id));
-            }
-            for (var i = 0; i < Chunks.Count; i++)
-            {
+                var currentChunk = source.Chunks[i];
+
+                var newChunk = new BundleChunk
+                {
+                    Id = BitConverter.GetBytes(currentChunk.ID).ToHexString(),
+                    BundleId = Id,
+
+                    CompressedSize = currentChunk.CompressedSize
+                };
+                Chunks.Add(newChunk);
+
                 if (i == 0)
                 {
                     Chunks[i].OffsetFromStart = 0;
