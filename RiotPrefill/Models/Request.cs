@@ -28,12 +28,12 @@
 
         public override string ToString()
         {
-            return $"{BundleKey}.bundle {LowerByteRange}-{UpperByteRange}";
+            return $"{BundleKey}.bundle {(LowerByteRange + "-" + UpperByteRange).PadLeft(15)} {ByteSize.FromBytes(TotalBytes).ToString()}";
         }
 
         public bool Overlaps(Request request2)
         {
-            int overlap = 4096 * 1;
+            int overlap = 1 * 1;
 
             if (LowerByteRange <= request2.LowerByteRange)
             {

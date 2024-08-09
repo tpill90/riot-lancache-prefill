@@ -1,25 +1,34 @@
 ﻿namespace RiotPrefill.Models
 {
-    public class BundleChunk
+    //TODO document
+    public sealed class BundleChunk
     {
-        public string BundleId { get; set; }
-        public string ID { get; set; }
-        public uint CompressedSize { get; set; }
-        public uint UncompressedSize { get; set; }
+        public string Id { get; }
 
-        public uint bundle_offset { get; set; }
+        public string BundleId { get; }
+
+        /// <summary>
+        /// This is the lower bound of the chunk, the offset from the beginning of the file
+        /// </summary>
+        public uint OffsetFromStart { get; set; }
+        public uint CompressedSize { get; }
+
+        public uint UpperBound => OffsetFromStart + CompressedSize;
+
+
+
 
         public BundleChunk(ReleaseManifestBundleChunk source, string bundleId)
         {
             BundleId = bundleId;
-            ID = BitConverter.GetBytes(source.ID).ToHexString();
+
+            Id = BitConverter.GetBytes(source.ID).ToHexString();
             CompressedSize = source.CompressedSize;
-            UncompressedSize = source.UncompressedSize;
         }
 
         public override string ToString()
         {
-            return $"{ID} {BundleId} {CompressedSize} {bundle_offset}";
+            return $"{Id} {BundleId} {CompressedSize} {OffsetFromStart}";
         }
     }
 }

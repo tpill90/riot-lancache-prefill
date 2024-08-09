@@ -119,27 +119,25 @@
         {
             var timer = Stopwatch.StartNew();
 
-            var bundles = new Dictionary<string, ManifestBundle>();
-            for (var index = 0; index < manifest.Bundles.Count; index++)
+            var bundles = new Dictionary<string, Bundle>();
+            foreach (var originalBundle in manifest.Bundles)
             {
-                var originalBundle = manifest.Bundles[index];
-
-                var bundle = new ManifestBundle(originalBundle);
-                bundles.Add(bundle.ID, bundle);
+                var bundle = new Bundle(originalBundle);
+                bundles.Add(bundle.Id, bundle);
             }
 
             var allChunksLookup = new Dictionary<string, BundleChunk>();
             var dupes = new List<BundleChunk>();
             foreach (var chunk in bundles.Values.SelectMany(e => e.Chunks).ToList())
             {
-                if (!allChunksLookup.ContainsKey(chunk.ID))
+                if (!allChunksLookup.ContainsKey(chunk.Id))
                 {
-                    allChunksLookup.Add(chunk.ID, chunk);
+                    allChunksLookup.Add(chunk.Id, chunk);
                 }
                 else
                 {
                     //TODO this isn't correct in the way that I'm doing it.  There can be duplicate chunkids between bundles, because the chunk id is only unique for that bundle
-                    var existing = allChunksLookup[chunk.ID];
+                    var existing = allChunksLookup[chunk.Id];
                     dupes.Add(chunk);
                 }
             }
@@ -162,16 +160,16 @@
                     chunksToDownload.Add(allChunksLookup[chunk]);
                 }
             }
-            var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.ID).ToList();
+            var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.Id).ToList();
             _ansiConsole.LogMarkupLine($"Deduped {LightYellow(chunksToDownload.Count)} chunks down to {Cyan(chunksToDownloadDeduped.Count)}");
 
 
-            var test = chunksToDownload.GroupBy(e => e.ID)
+            var test = chunksToDownload.GroupBy(e => e.Id)
                                        .Where(e => e.Count() > 1)
                                        .ToList();
 
             var requests = chunksToDownloadDeduped
-                                     .Select(e => new Request(e.BundleId, e.bundle_offset, e.bundle_offset + e.CompressedSize - 1))
+                                     .Select(e => new Request(e.BundleId, e.OffsetFromStart, e.UpperBound))
                                      .ToList();
 
             //TODO these need to be combined into multiple ranges in the same request for a single bundle
