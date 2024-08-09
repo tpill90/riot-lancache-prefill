@@ -10,24 +10,10 @@
         /// <summary>
         /// This is the lower bound of the chunk, the offset from the beginning of the file
         /// </summary>
-        public uint OffsetFromStart { get; set; }
+        public uint OffsetFromStart { get; set; } = 0;
         public uint CompressedSize { get; set; }
 
         public uint UpperBound => OffsetFromStart + CompressedSize;
-
-
-        public BundleChunk()
-        {
-
-        }
-
-        public BundleChunk(ReleaseManifestBundleChunk source, string bundleId)
-        {
-            BundleId = bundleId;
-
-            Id = BitConverter.GetBytes(source.ID).ToHexString();
-            CompressedSize = source.CompressedSize;
-        }
 
         public override string ToString()
         {

@@ -15,6 +15,7 @@
             var manifestBytes = await manifestHandler.DownloadManifestAsync(manifestUrl);
 
             // Parsing manifest
+            //TODO this is slower for some reason
             ReleaseManifest manifest = new ReleaseManifest(manifestBytes);
             _ansiConsole.LogMarkupLine("Finished parsing manifest", parseTimer);
 

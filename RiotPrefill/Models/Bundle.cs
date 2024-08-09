@@ -27,11 +27,7 @@
                 };
                 Chunks.Add(newChunk);
 
-                if (i == 0)
-                {
-                    Chunks[i].OffsetFromStart = 0;
-                }
-                else
+                if (i > 0)
                 {
                     Chunks[i].OffsetFromStart = Chunks[i - 1].OffsetFromStart + Chunks[i - 1].CompressedSize;
                 }
