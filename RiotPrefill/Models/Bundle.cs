@@ -11,6 +11,7 @@ namespace RiotPrefill.Models
         public BundleId Id { get; }
 
         public List<BundleChunk> Chunks { get; } = new List<BundleChunk>();
+        public Dictionary<string, BundleChunk> ChunkLookup = new Dictionary<string, BundleChunk>();
 
         public Bundle(ReleaseManifestBundle source)
         {
@@ -34,6 +35,8 @@ namespace RiotPrefill.Models
                     Chunks[i].OffsetFromStart = Chunks[i - 1].OffsetFromStart + Chunks[i - 1].CompressedSize;
                 }
             }
+
+            ChunkLookup = Chunks.ToDictionary(e => e.Id, e => e);
         }
 
         public override string ToString()

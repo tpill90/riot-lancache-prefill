@@ -17,7 +17,7 @@
 
         public override string ToString()
         {
-            return $"{Id} {BundleId} {CompressedSize} {OffsetFromStart}";
+            return $"{Id} Bundle: {BundleId} {OffsetFromStart}-{UpperBound}";
         }
     }
 }

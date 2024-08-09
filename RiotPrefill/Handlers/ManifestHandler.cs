@@ -37,13 +37,13 @@
             return latestVersion;
         }
 
-        public async Task<byte[]> DownloadManifestAsync(ReleaseInfo release)
+        public async Task<string> DownloadManifestAsync(ReleaseInfo release)
         {
             // Load from disk if manifest already exists
             var cachedFileName = Path.Combine(AppConfig.CacheDir, $"{release._Release.product}-{release.ArtifactTypeId}-{release.Version}.manifest");
             if (ManifestIsCached(cachedFileName))
             {
-                return await File.ReadAllBytesAsync(cachedFileName);
+                return cachedFileName;
             }
 
             byte[] responseAsBytes = null;
@@ -61,7 +61,7 @@
 
                 _ansiConsole.LogMarkupLine("Downloaded manifest", timer);
             });
-            return responseAsBytes;
+            return cachedFileName;
         }
 
         private bool ManifestIsCached(string manifestFileName)
@@ -138,31 +138,26 @@
                 }
             }
 
+            //TODO explain this
             ulong bitMask = 1 | (2 << 9);
             var filteredFiles = manifest.Files.Where(e => e.LanguageFlags == 0 || ((e.LanguageFlags & bitMask) != 0)).ToList();
-            //var filteredFiles = manifest.Files.ToList();
 
             //TODO figure out language flags
-            var fileChunks = filteredFiles.SelectMany(e => e.ChunkIDs)
+            var fileChunkIds = filteredFiles.SelectMany(e => e.ChunkIDs)
                                           .Select(e => BitConverter.GetBytes(e).ToHexString())
                                           .ToList();
-            _ansiConsole.LogMarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunks.Count)} chunks");
+            _ansiConsole.LogMarkupLine($"Filtered down to {LightYellow(filteredFiles.Count)} files and {Cyan(fileChunkIds.Count)} chunks");
 
             var chunksToDownload = new List<BundleChunk>();
-            foreach (var chunk in fileChunks)
+            foreach (var chunkId in fileChunkIds)
             {
-                if (allChunksLookup.ContainsKey(chunk))
+                if (allChunksLookup.ContainsKey(chunkId))
                 {
-                    chunksToDownload.Add(allChunksLookup[chunk]);
+                    chunksToDownload.Add(allChunksLookup[chunkId]);
                 }
             }
             var chunksToDownloadDeduped = chunksToDownload.DistinctBy(e => e.Id).ToList();
             _ansiConsole.LogMarkupLine($"Deduped {LightYellow(chunksToDownload.Count)} chunks down to {Cyan(chunksToDownloadDeduped.Count)}");
-
-
-            var test = chunksToDownload.GroupBy(e => e.Id)
-                                       .Where(e => e.Count() > 1)
-                                       .ToList();
 
             var requests = chunksToDownloadDeduped
                                      .Select(e => new Request(e.BundleId.Value, e.OffsetFromStart, e.UpperBound))

@@ -12,7 +12,11 @@
     {
         public ulong ID { get; private set; }
         public IList<ReleaseManifestBundle> Bundles => this._body.Bundles;
+        public IList<ReleaseManifestLanguage> Languages => this._body.Languages;
         public IList<LeagueToolkit.IO.ReleaseManifestFile.ReleaseManifestFile> Files => this._body.Files;
+        public IList<ReleaseManifestDirectory> Directories => this._body.Directories;
+        public IList<ReleaseManifestEncryptionKey> EncryptionKeys => this._body.EncryptionKeys;
+        public IList<ReleaseManifestChunkingParameter> ChunkingParameters => this._body.ChunkingParameters;
 
         private readonly ReleaseManifestBody _body;
 
