@@ -10,15 +10,23 @@
 
         }
 
-        public Request(string bundleKey, long? startBytes = null, long? endBytes = null)
+        public Request(string bundleKey, long startBytes, long endBytes)
         {
             BundleKey = bundleKey;
 
-            LowerByteRange = startBytes.Value;
-            UpperByteRange = endBytes.Value;
+            LowerByteRange = startBytes;
+            UpperByteRange = endBytes;
+        }
+
+        public Request(string bundleKey, List<ByteRange> byteRanges)
+        {
+            BundleKey = bundleKey;
+            ByteRanges = byteRanges;
         }
 
         public string BundleKey { get; set; }
+
+        public List<ByteRange> ByteRanges { get; init; }
 
         public long LowerByteRange { get; set; }
         public long UpperByteRange { get; set; }
@@ -56,6 +64,26 @@
         {
             LowerByteRange = Math.Min(LowerByteRange, request2.LowerByteRange);
             UpperByteRange = Math.Max(UpperByteRange, request2.UpperByteRange);
+        }
+    }
+
+    public class ByteRange
+    {
+        public ByteRange(long lower, long upper)
+        {
+            Lower = lower;
+            Upper = upper;
+        }
+
+        public long Lower { get; set; }
+        public long Upper { get; set; }
+
+        // Bytes are an inclusive range.  Ex bytes 0->9 == 10 bytes
+        public long TotalBytes => Upper - Lower + 1;
+
+        public override string ToString()
+        {
+            return $"{Lower}-{Upper}";
         }
     }
 }

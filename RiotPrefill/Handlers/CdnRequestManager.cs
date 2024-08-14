@@ -17,7 +17,7 @@
             _ansiConsole = ansiConsole;
 
             _client = new HttpClient();
-            _client.DefaultRequestHeaders.Add("User-Agent", "RiotNetwork/1.0.0");
+            _client.DefaultRequestHeaders.Add("User-Agent", "RiotPrefill");
         }
 
         public async Task InitializeAsync()
@@ -89,7 +89,20 @@
                     }
                     using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
                     requestMessage.Headers.Host = _currentCdn;
-                    requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
+
+                    if (request.ByteRanges == null || request.ByteRanges.Count == 0)
+                    {
+                        // Single range
+                        requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
+                    }
+                    else
+                    {
+                        // Multiple combined
+                        var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
+                        requestMessage.Headers.Add("Range", $"bytes={joined}");
+                        Debugger.Break();
+                    }
+
 
                     using var cts = new CancellationTokenSource();
                     using var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token);
