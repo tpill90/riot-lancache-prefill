@@ -53,7 +53,6 @@
 
             rawRequests = rawRequests.Where(e => e != null).ToArray();
 
-            var counter = 0;
             //TODO the way that I'm doing this is a disaster, refactor it once working
             foreach (var rawRequest in rawRequests)
             {

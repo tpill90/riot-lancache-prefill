@@ -78,7 +78,7 @@
 
             var failedRequests = new ConcurrentBag<Request>();
 
-            await Parallel.ForEachAsync(requestsToDownload, new ParallelOptions { MaxDegreeOfParallelism = 25 }, body: async (request, _) =>
+            await Parallel.ForEachAsync(requestsToDownload, new ParallelOptions { MaxDegreeOfParallelism = 20 }, body: async (request, _) =>
             {
                 try
                 {
@@ -93,13 +93,13 @@
                     if (request.ByteRanges == null || request.ByteRanges.Count == 0)
                     {
                         // Single range
-                        requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
+                        //requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
                     }
                     else
                     {
                         // Multiple combined
                         var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
-                        requestMessage.Headers.Add("Range", $"bytes={joined}");
+                        //requestMessage.Headers.Add("Range", $"bytes={joined}");
                         Debugger.Break();
                     }
 

@@ -2,7 +2,7 @@
 {
     public static class Program
     {
-        public static IAnsiConsole _ansiConsole = AnsiConsole.Console;
+        private static IAnsiConsole _ansiConsole = AnsiConsole.Console;
 
         public static async Task Main()
         {
@@ -55,13 +55,10 @@
             }
 
             using var downloader = new DownloadHandler(_ansiConsole);
-            var filteredToMultipleRanges = combinedRequests.Where(e => e.ByteRanges.Count > 1).ToList();
-
-
             //await downloader.DownloadQueuedChunksAsync(downloadQueue);
 
 
-            await downloader.DownloadQueuedChunksAsync(filteredToMultipleRanges);
+            await downloader.DownloadQueuedChunksAsync(combinedRequests);
         }
 
 

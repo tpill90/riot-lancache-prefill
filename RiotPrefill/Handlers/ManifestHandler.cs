@@ -81,7 +81,7 @@
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
             var releaseApiResponse = await JsonSerializer.DeserializeAsync(responseStream, SerializationContext.Default.PatchlinesResponse);
-            var manifestUrl = releaseApiResponse.keystoneproductsleague_of_legendspatchlineslive.platforms.win.configurations.First(e => e.id == "NA").patch_url;
+            var manifestUrl = releaseApiResponse.KeystoneProducts.platforms.win.configurations.First(e => e.id == "NA").patch_url;
 
 
             return manifestUrl;
