@@ -55,8 +55,6 @@
             }
 
             using var downloader = new DownloadHandler(_ansiConsole);
-            //await downloader.DownloadQueuedChunksAsync(downloadQueue);
-
 
             await downloader.DownloadQueuedChunksAsync(combinedRequests);
         }

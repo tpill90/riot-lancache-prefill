@@ -73,7 +73,7 @@
         /// <returns>A list of failed requests</returns>
         public async Task<ConcurrentBag<Request>> AttemptDownloadAsync(ProgressContext ctx, string taskTitle, List<Request> requestsToDownload, bool forceRecache = false)
         {
-            double requestTotalSize = requestsToDownload.Sum(e => e.TotalBytes);
+            double requestTotalSize = requestsToDownload.Sum(e => e.TotalBytes2);
             var progressTask = ctx.AddTask(taskTitle, new ProgressTaskSettings { MaxValue = requestTotalSize });
 
             var failedRequests = new ConcurrentBag<Request>();
@@ -93,18 +93,17 @@
                     if (request.ByteRanges == null || request.ByteRanges.Count == 0)
                     {
                         // Single range
-                        //requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
+                        requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
                     }
                     else
                     {
                         // Multiple combined
                         var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
-                        //requestMessage.Headers.Add("Range", $"bytes={joined}");
-                        Debugger.Break();
+                        requestMessage.Headers.Add("Range", $"bytes={joined}");
                     }
 
 
-                    using var cts = new CancellationTokenSource();
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
                     using var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token);
                     using Stream responseStream = await response.Content.ReadAsStreamAsync(cts.Token);
                     response.EnsureSuccessStatusCode();
@@ -117,9 +116,20 @@
                 }
                 catch (Exception e)
                 {
+                    if (request.ByteRanges == null || request.ByteRanges.Count == 0)
+                    {
+                        _ansiConsole.LogMarkupError($"Request failed {request.ToString()}");
+                    }
+                    else
+                    {
+                        var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
+                        _ansiConsole.LogMarkupError($"Request failed {request.ToString()} {joined}");
+                    }
+
+
                     failedRequests.Add(request);
                 }
-                progressTask.Increment(request.TotalBytes);
+                progressTask.Increment(request.TotalBytes2);
             });
 
 

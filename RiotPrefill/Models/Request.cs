@@ -34,6 +34,8 @@
         // Bytes are an inclusive range.  Ex bytes 0->9 == 10 bytes
         public long TotalBytes => UpperByteRange - LowerByteRange + 1;
 
+        public long TotalBytes2 => ByteRanges.Select(e => e.TotalBytes).Sum();
+
         public override string ToString()
         {
             return $"{BundleKey}.bundle {(LowerByteRange + "-" + UpperByteRange).PadLeft(15)} {ByteSize.FromBytes(TotalBytes).ToString()}";
