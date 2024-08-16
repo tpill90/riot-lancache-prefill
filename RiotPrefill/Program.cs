@@ -46,19 +46,15 @@
             var groupedByBundle = downloadQueue.GroupBy(e => e.BundleKey).ToList();
             foreach (var bundle in groupedByBundle)
             {
-                var chunked = bundle.Chunk(5).ToList();
-                foreach (var chunk in chunked)
-                {
-                    var ranges = chunk.Select(e => new ByteRange(e.LowerByteRange, e.UpperByteRange)).ToList();
-                    combinedRequests.Add(new Request(bundle.Key, ranges));
-                }
+                var ranges = bundle.OrderBy(e => e.LowerByteRange)
+                                               .Select(e => new ByteRange(e.LowerByteRange, e.UpperByteRange))
+                                               .ToList();
+                combinedRequests.Add(new Request(bundle.Key, ranges));
             }
 
-            using var downloader = new DownloadHandler(_ansiConsole);
 
+            using var downloader = new DownloadHandler(_ansiConsole);
             await downloader.DownloadQueuedChunksAsync(combinedRequests);
         }
-
-
     }
 }

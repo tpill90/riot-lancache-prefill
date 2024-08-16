@@ -38,6 +38,11 @@
 
         public override string ToString()
         {
+            if (ByteRanges != null && ByteRanges.Count != 0)
+            {
+                var rangesJoined = String.Join(",", ByteRanges.Take(5).Select(e => e.ToString()));
+                return $"{BundleKey}.bundle {ByteSize.FromBytes(TotalBytes2).ToString()} {rangesJoined}";
+            }
             return $"{BundleKey}.bundle {(LowerByteRange + "-" + UpperByteRange).PadLeft(15)} {ByteSize.FromBytes(TotalBytes).ToString()}";
         }
 
