@@ -47,5 +47,7 @@
     {
         public string id { get; set; }
         public string patch_url { get; set; }
+
+        public string[] allowed_http_fallback_hostnames { get; set; }
     }
 }

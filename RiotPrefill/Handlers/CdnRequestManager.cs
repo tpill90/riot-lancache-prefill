@@ -5,19 +5,29 @@
         private readonly IAnsiConsole _ansiConsole;
         private readonly HttpClient _client;
 
-        private string _currentCdn => "lol.dyn.riotcdn.net";
+        private readonly string _currentCdn;
 
         /// <summary>
         /// The URL/IP Address where the Lancache has been detected.
         /// </summary>
         private string _lancacheAddress;
 
-        public DownloadHandler(IAnsiConsole ansiConsole)
+        public DownloadHandler(IAnsiConsole ansiConsole, Patchline product)
         {
             _ansiConsole = ansiConsole;
 
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("User-Agent", "RiotPrefill");
+
+            //TODO this is ugly and I don't like having to determine which cdn like this.  Should probably be passed in with the download list.
+            if (product == Patchline.LeagueOfLegends)
+            {
+                _currentCdn = "lol.dyn.riotcdn.net";
+            }
+            if (product == Patchline.Valorant)
+            {
+                _currentCdn = "valorant.dyn.riotcdn.net";
+            }
         }
 
         public async Task InitializeAsync()

@@ -6,7 +6,7 @@
 
         public static async Task Main()
         {
-            AppConfig.CompareAgainstRealRequests = true;
+            //AppConfig.CompareAgainstRealRequests = true;
 
             // Standalone
             //var releaseInfo = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolStandaloneClientContent);
@@ -16,9 +16,11 @@
             //var releaseInfo = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolGameClient);
             //var manifestPathOnDisk = await manifestHandler.DownloadManifestAsync(releaseInfo);
 
+            var currentPatchline = Patchline.Valorant;
+
             // Downloading manifest
             var manifestHandler = new ManifestHandler(_ansiConsole);
-            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync(Patchline.Valorant);
+            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync(currentPatchline);
             var manifestPathOnDisk = await manifestHandler.DownloadManifestAsync(manifestUrl);
 
             // Parsing manifest
@@ -40,12 +42,10 @@
                 return;
             }
 
-            //TODO this needs to be moved over to the manifest handler  at some point
+            //TODO this needs to be moved over to the manifest handler at some point when it won't break
             // Combining requests to the same bundle into a single request
             var combinedRequests = new List<Request>();
-
-            var groupedByBundle = downloadQueue.GroupBy(e => e.BundleKey).ToList();
-            foreach (var bundle in groupedByBundle)
+            foreach (var bundle in downloadQueue.GroupBy(e => e.BundleKey).ToList())
             {
                 var ranges = bundle.OrderBy(e => e.LowerByteRange)
                                                .Select(e => new ByteRange(e.LowerByteRange, e.UpperByteRange))
@@ -55,7 +55,7 @@
 
 
             var filteredToRangedOnly = combinedRequests.Where(e => e.ByteRanges.Count > 1).ToList();
-            using var downloader = new DownloadHandler(_ansiConsole);
+            using var downloader = new DownloadHandler(_ansiConsole, currentPatchline);
             await downloader.DownloadQueuedChunksAsync(combinedRequests);
         }
     }
