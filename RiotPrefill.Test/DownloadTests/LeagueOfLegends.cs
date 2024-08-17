@@ -1,6 +1,7 @@
 ﻿using RiotPrefill.Handlers;
 using System.Diagnostics;
 using LeagueToolkit.IO.ReleaseManifestFile;
+using RiotPrefill.Models;
 using RiotPrefill.ReleaseManifestFile;
 using Spectre.Console;
 
@@ -20,7 +21,7 @@ namespace RiotPrefill.Test.DownloadTests
 
             // Downloading manifest
             var manifestHandler = new ManifestHandler(AnsiConsole.Console);
-            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync();
+            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync(Patchline.LeagueOfLegends);
             var manifestFilePath = await manifestHandler.DownloadManifestAsync(manifestUrl);
 
             // Parsing manifest

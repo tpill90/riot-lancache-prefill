@@ -2,11 +2,30 @@
 {
     public sealed class PatchlinesResponse
     {
+        public KeystoneProduct KeystoneProduct
+        {
+            get
+            {
+                if (LeagueOfLegends != null)
+                {
+                    return LeagueOfLegends;
+                }
+                if (Valorant != null)
+                {
+                    return Valorant;
+                }
+                return null;
+            }
+        }
+
         [JsonPropertyName("keystone.products.league_of_legends.patchlines.live")]
-        public KeystoneProductsLeagueOfLegendsPatchlinesLive KeystoneProducts { get; set; }
+        public KeystoneProduct LeagueOfLegends { get; set; }
+
+        [JsonPropertyName("keystone.products.valorant.patchlines.live")]
+        public KeystoneProduct Valorant { get; set; }
     }
 
-    public class KeystoneProductsLeagueOfLegendsPatchlinesLive
+    public class KeystoneProduct
     {
         public Platforms platforms { get; set; }
         public string version { get; set; }

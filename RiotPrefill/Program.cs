@@ -6,13 +6,7 @@
 
         public static async Task Main()
         {
-            //AppConfig.CompareAgainstRealRequests = true;
-
-            // Downloading manifest
-            var parseTimer = Stopwatch.StartNew();
-            var manifestHandler = new ManifestHandler(_ansiConsole);
-            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync();
-            var manifestPathOnDisk = await manifestHandler.DownloadManifestAsync(manifestUrl);
+            AppConfig.CompareAgainstRealRequests = true;
 
             // Standalone
             //var releaseInfo = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolStandaloneClientContent);
@@ -22,7 +16,13 @@
             //var releaseInfo = await manifestHandler.FindLatestProductReleaseAsync(ArtifactType.LolGameClient);
             //var manifestPathOnDisk = await manifestHandler.DownloadManifestAsync(releaseInfo);
 
+            // Downloading manifest
+            var manifestHandler = new ManifestHandler(_ansiConsole);
+            var manifestUrl = await manifestHandler.FindPatchlineReleaseAsync(Patchline.Valorant);
+            var manifestPathOnDisk = await manifestHandler.DownloadManifestAsync(manifestUrl);
+
             // Parsing manifest
+            var parseTimer = Stopwatch.StartNew();
             ReleaseManifest manifest = new ReleaseManifest(manifestPathOnDisk);
             _ansiConsole.LogMarkupLine("Finished parsing manifest", parseTimer);
 
@@ -40,6 +40,7 @@
                 return;
             }
 
+            //TODO this needs to be moved over to the manifest handler  at some point
             // Combining requests to the same bundle into a single request
             var combinedRequests = new List<Request>();
 
@@ -53,6 +54,7 @@
             }
 
 
+            var filteredToRangedOnly = combinedRequests.Where(e => e.ByteRanges.Count > 1).ToList();
             using var downloader = new DownloadHandler(_ansiConsole);
             await downloader.DownloadQueuedChunksAsync(combinedRequests);
         }

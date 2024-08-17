@@ -69,10 +69,9 @@
             return !AppConfig.NoLocalCache && File.Exists(manifestFileName);
         }
 
-        public async Task<string> FindPatchlineReleaseAsync()
+        public async Task<string> FindPatchlineReleaseAsync(Patchline product)
         {
-            //TODO parameterize
-            var apiUrl = $"https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines";
+            var apiUrl = $"https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.{product.Value}.patchlines";
             using var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
 
             // Send request
@@ -81,7 +80,7 @@
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
             var releaseApiResponse = await JsonSerializer.DeserializeAsync(responseStream, SerializationContext.Default.PatchlinesResponse);
-            var manifestUrl = releaseApiResponse.KeystoneProducts.platforms.Win.configurations.First(e => e.id == "NA").patch_url;
+            var manifestUrl = releaseApiResponse.KeystoneProduct.platforms.Win.configurations.First(e => e.id.ToUpper() == "NA").patch_url;
 
 
             return manifestUrl;
