@@ -17,11 +17,7 @@ namespace RiotPrefill.CliCommands
         {
             _ansiConsole = console.CreateAnsiConsole();
 
-            //AppConfig.SkipDownloads = true;
-            //AppConfig.CompareAgainstRealRequests = true;
-
             //AppConfig.DownloadWholeBundle = true;
-            AppConfig.DownloadMultirangeOnly = true;
 
             foreach (var patchline in Patchline.List())
             {

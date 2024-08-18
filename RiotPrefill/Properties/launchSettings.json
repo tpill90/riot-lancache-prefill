@@ -3,6 +3,10 @@
     "Prefill": {
       "commandName": "Project",
       "commandLineArgs": "prefill"
+    },
+    "Prefill - Multirange only": {
+      "commandName": "Project",
+      "commandLineArgs": "prefill --multirange-only"
     }
   }
 }

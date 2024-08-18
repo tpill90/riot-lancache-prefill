@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.HighPerformance;
-
-namespace RiotPrefill
+﻿namespace RiotPrefill
 {
     public static class Program
     {
@@ -41,13 +39,12 @@ namespace RiotPrefill
             // Have to skip the first argument, since its the path to the executable
             var args = Environment.GetCommandLineArgs().Skip(1).ToList();
 
-            // Enables SteamKit2 debugging as well as SteamPrefill verbose logs
-            if (args.Any(e => e.Contains("--debug")))
+            if (args.Any(e => e.Contains("--compare-requests")))
             {
-                AnsiConsole.Console.LogMarkupLine($"Using {LightYellow("--debug")} flag.  Displaying debug only logging...");
-                AnsiConsole.Console.LogMarkupLine($"Additional debugging files will be output to {Magenta(AppConfig.DebugOutputDir)}");
-                AppConfig.DebugLogs = true;
-                args.Remove("--debug");
+                AnsiConsole.Console.LogMarkupLine($"Using {LightYellow("--compare-requests")} flag.  Running comparison logic...");
+                // Need to enable SkipDownloads as well in order to get this to work well
+                AppConfig.CompareAgainstRealRequests = true;
+                args.Remove("--compare-requests");
             }
 
             // Will skip over downloading logic.  Will only download manifests
@@ -56,6 +53,20 @@ namespace RiotPrefill
                 AnsiConsole.Console.LogMarkupLine($"Using {LightYellow("--no-download")} flag.  Will skip downloading chunks...");
                 AppConfig.SkipDownloads = true;
                 args.Remove("--no-download");
+            }
+
+            if (args.Any(e => e.Contains("--multirange-only")))
+            {
+                AnsiConsole.Console.LogMarkupLine($"Using {LightYellow("--multirange-only")} flag.  Will only download requests with multiple ranges specified...");
+                AppConfig.DownloadMultirangeOnly = true;
+                args.Remove("--multirange-only");
+            }
+
+            if (args.Any(e => e.Contains("--whole-bundle")))
+            {
+                AnsiConsole.Console.LogMarkupLine($"Using {LightYellow("--whole-bundle")} flag.  Will download entire bundle instead of only ranges");
+                AppConfig.DownloadMultirangeOnly = true;
+                args.Remove("--whole-bundle");
             }
 
             // Skips using locally cached manifests. Saves disk space, at the expense of slower subsequent runs.
@@ -69,7 +80,7 @@ namespace RiotPrefill
             }
 
             // Adding some formatting to logging to make it more readable + clear that these flags are enabled
-            if (AppConfig.DebugLogs || AppConfig.SkipDownloads || AppConfig.NoLocalCache)
+            if (AppConfig.CompareAgainstRealRequests || AppConfig.SkipDownloads || AppConfig.NoLocalCache || AppConfig.DownloadMultirangeOnly || AppConfig.DownloadMultirangeOnly)
             {
                 AnsiConsole.Console.WriteLine();
                 AnsiConsole.Console.Write(new Rule());
