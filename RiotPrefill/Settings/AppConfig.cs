@@ -100,6 +100,10 @@ namespace RiotPrefill.Settings
             }
         }
 
+        public static bool DownloadWholeBundle { get; set; }
+
+        public static bool DownloadMultirangeOnly { get; set; }
+
         #endregion
     }
 }

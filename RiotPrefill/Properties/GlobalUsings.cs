@@ -32,4 +32,8 @@ global using JetBrains.Annotations;
 global using System.Threading;
 global using CommunityToolkit.HighPerformance.Buffers;
 global using FlatSharp;
+global using CliFx;
+global using CliFx.Attributes;
+global using CliFx.Exceptions;
+global using CliFx.Infrastructure;
 

@@ -40,8 +40,14 @@
         {
             if (ByteRanges != null && ByteRanges.Count != 0)
             {
-                var rangesJoined = String.Join(",", ByteRanges.Take(5).Select(e => e.ToString()));
-                return $"{BundleKey}.bundle {ByteSize.FromBytes(TotalBytes2).ToString()} {rangesJoined}";
+                var firstRange = ByteRanges.First();
+                var secondRange = ByteRanges.Last();
+
+                if (ByteRanges.Count == 2)
+                {
+                    return $"{BundleKey}.bundle {ByteSize.FromBytes(TotalBytes2).ToString()} {firstRange} {secondRange}";
+                }
+                return $"{BundleKey}.bundle {ByteSize.FromBytes(TotalBytes2).ToString()} {firstRange} ... {secondRange}";
             }
             return $"{BundleKey}.bundle {(LowerByteRange + "-" + UpperByteRange).PadLeft(15)} {ByteSize.FromBytes(TotalBytes).ToString()}";
         }

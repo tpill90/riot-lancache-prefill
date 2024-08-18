@@ -17,7 +17,7 @@
             _ansiConsole = ansiConsole;
 
             _client = new HttpClient();
-            _client.DefaultRequestHeaders.Add("User-Agent", "RiotPrefill");
+            _client.DefaultRequestHeaders.Add("User-Agent", "RiotNetwork/1.0.0");
 
             //TODO this is ugly and I don't like having to determine which cdn like this.  Should probably be passed in with the download list.
             if (product == Patchline.LeagueOfLegends)
@@ -100,20 +100,9 @@
                     using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
                     requestMessage.Headers.Host = _currentCdn;
 
-                    if (request.ByteRanges == null || request.ByteRanges.Count == 0)
-                    {
-                        // Single range
-                        requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
-                    }
-                    else
-                    {
-                        // Multiple combined
-                        var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
-                        requestMessage.Headers.Add("Range", $"bytes={joined}");
-                    }
+                    BuildRangeHeader(request, requestMessage);
 
-
-                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                    using var cts = new CancellationTokenSource();
                     using var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token);
                     using Stream responseStream = await response.Content.ReadAsStreamAsync(cts.Token);
                     response.EnsureSuccessStatusCode();
@@ -126,17 +115,7 @@
                 }
                 catch (Exception e)
                 {
-                    if (request.ByteRanges == null || request.ByteRanges.Count == 0)
-                    {
-                        _ansiConsole.LogMarkupError($"Request failed {request.ToString()}");
-                    }
-                    else
-                    {
-                        var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
-                        _ansiConsole.LogMarkupError($"Request failed {request.ToString()} {joined}");
-                    }
-
-
+                    _ansiConsole.LogMarkupError($"Request failed {request.ToString()}");
                     failedRequests.Add(request);
                 }
                 progressTask.Increment(request.TotalBytes2);
@@ -146,6 +125,26 @@
             // Making sure the progress bar is always set to its max value, in-case some unexpected error leaves the progress bar showing as unfinished
             progressTask.Increment(progressTask.MaxValue);
             return failedRequests;
+        }
+
+        private static void BuildRangeHeader(Request request, HttpRequestMessage requestMessage)
+        {
+            if (AppConfig.DownloadWholeBundle)
+            {
+                return;
+            }
+
+            if (request.ByteRanges == null || request.ByteRanges.Count == 0)
+            {
+                // Single range
+                requestMessage.Headers.Range = new RangeHeaderValue(request.LowerByteRange, request.UpperByteRange);
+            }
+            else
+            {
+                // Multiple combined
+                var joined = String.Join(",", request.ByteRanges.Select(e => e.ToString()));
+                requestMessage.Headers.Add("Range", $"bytes={joined}");
+            }
         }
 
         public void Dispose()

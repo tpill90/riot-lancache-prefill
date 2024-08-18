@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Prefill": {
+      "commandName": "Project",
+      "commandLineArgs": "prefill"
+    }
+  }
+}
