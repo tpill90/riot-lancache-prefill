@@ -1,4 +1,4 @@
 # riot-lancache-prefill
 
-> [!ERROR]
+> [!WARNING]
 > This code has not yet been finished, and is not a complete product intended to be used.
